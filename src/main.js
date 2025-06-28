@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { createWebHistory, createRouter } from "vue-router";
+import { AuthService } from './utils/auth';
 
 // styles
 
@@ -37,9 +38,10 @@ import Index from "@/views/Index.vue";
 
 const routes = [
   {
-    path: "/admin",
+    path: "",
     redirect: "/admin/dashboard",
     component: Admin,
+    meta: { requiresAuth: false },
     children: [
       {
         path: "/admin/dashboard",
@@ -83,7 +85,7 @@ const routes = [
     component: Profile,
   },
   {
-    path: "/",
+    path: "/adminsdfsdfsdf",
     component: Index,
   },
   { path: "/:pathMatch(.*)*", redirect: "/" },
@@ -92,6 +94,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !AuthService.isAuthenticated()) {
+    next('/auth/login');
+  } else {
+    next();
+  }
 });
 
 createApp(App).use(router).mount("#app");
